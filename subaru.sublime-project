@@ -30,8 +30,8 @@
      "build_systems":
     [
         {
-            "name": "bld bbman linux",
-            "cmd": ["make", "-f",  "Makefile.linux", "-j", "4"]
+            "name": "build",
+            "cmd": ["sh", "docker-based-build.sh"]
         }
     ]
 }
