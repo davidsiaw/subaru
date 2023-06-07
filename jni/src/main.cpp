@@ -129,171 +129,88 @@ void PollEvents(std::vector<InputState> &oInputState)
 	}
 }
 
+#include "utils.hpp"
+
+namespace bomberman {
+
+	class TestScene : public SceneInterface
+	{
+		public:
+			TestScene() {}
+			virtual ~TestScene() {}
+			virtual void Init(SDL_Window* window, SDL_Renderer* renderer)
+			{
+				auto font = utils::LoadFont("drawable/Gamegirl.ttf", 16);
+				_newGame = utils::DrawString(renderer, font, "Hello", utils::MakeColor(0xff00ffff));
+			}
+
+			virtual void Update(const std::vector<InputState>& inputs, uint32_t timestamp)
+			{
+
+			}
+
+			virtual void Render(SDL_Renderer *renderer)
+			{
+			    SDL_Rect rect;
+			    rect.x = 10;
+			    rect.y = 10;
+			    rect.w = 200;
+			    rect.h = 200;
+
+				utils::DrawImage(renderer, _newGame, 50, 50);
+			    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			    SDL_RenderDrawRect(renderer, &rect);
+			}
+
+			virtual bool Running()
+			{
+				return true;
+			}
+
+		private:
+			bool _running;
+			std::shared_ptr<SDL_Texture> _newGame;
+	};
+
+}
+
+
 void game()
 {
-    while (true) {
-		bomberman::PlayerConfigArray players;
-        
-		players[0].name = "Athos";
-		players[0].spriteName = "drawable/miku2.png";
-		players[0].present = true;
-		players[0].isComputer = false;
-		players[0].aiScript = "aiscripts/example.lua";
-        
-		players[1].name = "Porthos";
-		players[1].spriteName = "drawable/duckie.png";
-		players[1].present = true;
-		players[1].isComputer = true;
-		players[1].aiScript = "aiscripts/example.lua";
-        
-		players[2].name = "Aramis";
-		players[2].spriteName = "drawable/manji.png";
-		players[2].present = false;
-		players[2].isComputer = true;
-		players[2].aiScript = "aiscripts/example.lua";
-        
-		players[3].name = "D'Artagnan";
-		players[3].spriteName = "drawable/whitebbman.png";
-		players[3].present = false;
-		players[3].isComputer = true;
-		players[3].aiScript = "aiscripts/example.lua";
-		
-		
-		std::shared_ptr<bomberman::GameScene> ts(new bomberman::GameScene(players));
-		std::shared_ptr<bomberman::FadeScene> cover(new bomberman::FadeScene(ts));
-        
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-        std::shared_ptr<bomberman::TouchScreenKeyScene> coverTS(new bomberman::TouchScreenKeyScene(cover));
-        run(coverTS);
-#else
-		run(cover);
-#endif
-        
-		std::shared_ptr<bomberman::VictoryScene> vs(new bomberman::VictoryScene(ts->GetVictor()));
-		std::shared_ptr<bomberman::FadeScene> fs(new bomberman::FadeScene(vs));
-        
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-        std::shared_ptr<bomberman::TouchScreenKeyScene> vicTS(new bomberman::TouchScreenKeyScene(fs));
-        run(vicTS);
-#else
-		run(fs);
-#endif
-        
 
-    }
-    
-#ifdef PROGRAM_OPTIONS
-	// This is the game's options harness. We perform game testing here without having to go through
-	// the menus which are tedious
-	if (!vm.empty())
-	{
-		bomberman::PlayerConfigArray players;
+	std::shared_ptr<bomberman::TestScene> testScene(new bomberman::TestScene());
+	run(testScene);
 
-		int p1 = vm.count("p1");
-		int p2 = vm.count("p2");
-		int p3 = vm.count("p3");
-		int p4 = vm.count("p4");
 
-		players[0].name = "Athos";
-		players[0].spriteName = "test/SaturnBomberman-BlackBomberman.PNG";
-		players[0].present = p1 ? true : false;
-		players[0].isComputer = p1 ? true : false;
-		players[0].aiScript =  p1 ? vm["p1"].as<std::string>() : "";
-
-		players[1].name = "Porthos";
-		players[1].spriteName = "test/honey.png";
-		players[1].present = p2 ? true : false;
-		players[1].isComputer = p2 ? true : false;
-		players[1].aiScript = p2 ? vm["p2"].as<std::string>() : "";
-
-		players[2].name = "Aramis";
-		players[2].spriteName = "test/manji.png";
-		players[2].present = p3 ? true : false;
-		players[2].isComputer = p3 ? true : false;
-		players[2].aiScript = p3 ? vm["p3"].as<std::string>() : "";
-
-		players[3].name = "D'Artagnan";
-		players[3].spriteName = "test/whitebbman.png";
-		players[3].present = p4 ? true : false;
-		players[3].isComputer = p4 ? true : false;
-		players[3].aiScript = p4 ? vm["p4"].as<std::string>() : "";
-		
-		for (int i=0;i<4;i++)
-		{
-			if(vm.count("human"))
-			{
-				int humanplayer = vm["human"].as<int>();
-				if(i+1 == humanplayer)
-				{
-					players[i].present = true;
-					players[i].isComputer = false;
-				}
-			}
-		}
-		
-		std::shared_ptr<bomberman::GameScene> ts(new bomberman::GameScene(players));
-		std::shared_ptr<bomberman::FadeScene> cover(new bomberman::FadeScene(ts));
-		run(cover);
-			
-		std::shared_ptr<bomberman::VictoryScene> vs(new bomberman::VictoryScene(ts->GetVictor()));
-		std::shared_ptr<bomberman::FadeScene> fs(new bomberman::FadeScene(vs));
-		run(fs);
-		return;
-	}
-#endif // PROGRAM_OPTIONS
 
 	// This is where the game's storyboard is encoded
-	while (true)
-	{
-		std::shared_ptr<bomberman::MenuScene> menuScene(new bomberman::MenuScene());
-		run(menuScene);
+	// while (true)
+	// {
+	// 	std::shared_ptr<bomberman::MenuScene> menuScene(new bomberman::MenuScene());
+	// 	run(menuScene);
 
-		if (menuScene->GetSelection() == bomberman::MenuScene::NEWGAME)
-		{
+	// 	if (menuScene->GetSelection() == bomberman::MenuScene::NEWGAME)
+	// 	{
 
-			std::shared_ptr<bomberman::SetupScene> setupScene(new bomberman::SetupScene());
-			run(setupScene);
+	// 		std::shared_ptr<bomberman::SetupScene> setupScene(new bomberman::SetupScene());
+	// 		run(setupScene);
 			
-			std::shared_ptr<bomberman::GameScene> ts(new bomberman::GameScene(setupScene->GetConfig()));
-			std::shared_ptr<bomberman::FadeScene> cover(new bomberman::FadeScene(ts));
-			run(cover);
+	// 		std::shared_ptr<bomberman::GameScene> ts(new bomberman::GameScene(setupScene->GetConfig()));
+	// 		std::shared_ptr<bomberman::FadeScene> cover(new bomberman::FadeScene(ts));
+	// 		run(cover);
 
-			std::shared_ptr<bomberman::VictoryScene> vs(new bomberman::VictoryScene(ts->GetVictor()));
-			std::shared_ptr<bomberman::FadeScene> fs(new bomberman::FadeScene(vs));
-			run(fs);
-		}
-		else
-		{
-		}
-	}
+	// 		std::shared_ptr<bomberman::VictoryScene> vs(new bomberman::VictoryScene(ts->GetVictor()));
+	// 		std::shared_ptr<bomberman::FadeScene> fs(new bomberman::FadeScene(vs));
+	// 		run(fs);
+	// 	}
+	// 	else
+	// 	{
+	// 	}
+	// }
 }
 
 int main(int argc, char** argv)
 {
-#ifdef PROGRAM_OPTIONS
-	namespace po = boost::program_options;
-
-	po::options_description desc("Allowed options");
-	desc.add_options()
-		("help", "Produce this help message")
-		("human", po::value<int>(), "Human player number (1-4)")
-		("p1", po::value<std::string>(), "Player 1 AI Script")
-		("p2", po::value<std::string>(), "Player 2 AI Script")
-		("p3", po::value<std::string>(), "Player 3 AI Script")
-		("p4", po::value<std::string>(), "Player 4 AI Script");
-	
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
-
-	if (vm.count("help"))
-	{
-		std::stringstream ss;
-		ss << desc << std::endl;
-		printlog("%s\n", ss.str().c_str());
-		return 0;
-	}
-#endif // PROGRAM_OPTIONS
-
 #ifdef ANDROID
 	keyMap[ouya::UP] = InputState::UP;
 	keyMap[ouya::DOWN] = InputState::DOWN;
@@ -343,9 +260,9 @@ int main(int argc, char** argv)
 		"Bomberman",                 
 		SDL_WINDOWPOS_UNDEFINED,           
 		SDL_WINDOWPOS_UNDEFINED,           
-		WIDTH,
-		HEIGHT,
-		SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL|SDL_WINDOW_ALLOW_HIGHDPI
+		1024,
+		600,
+		SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL
 	);
     
     

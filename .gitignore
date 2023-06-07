@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+bin/
+*.iml
+gen/
+libs/armeabi/
+obj/
+out/
