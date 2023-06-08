@@ -16,3 +16,6 @@
 [submodule "jni/luacppinterface"]
 	path = jni/luacppinterface
 	url = https://github.com/davidsiaw/luacppinterface
+[submodule "jni/SDL_net"]
+	path = jni/SDL_net
+	url = https://github.com/libsdl-org/SDL_net
